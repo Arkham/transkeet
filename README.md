@@ -31,11 +31,20 @@ pip install -e .
 
 On first launch the Parakeet model (~600 MB) will be downloaded from Hugging Face and cached locally.
 
+
+### Setup with Devbox (alternative)
+
+If you have [`devbox`](https://www.jetify.com/devbox), simply continue to the next step.
+
+
 ## Usage
 
 ```bash
 source .venv/bin/activate
 transkeet
+
+# or with devbox:
+devbox run start
 ```
 
 A 🦜 appears in your menu bar. Hold **Right Cmd** (default) to record — the icon turns 🔴 while listening. Release the key and it switches to 🔄 while transcribing, then pastes the result at your cursor and returns to 🦜.
