@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
+  "packages": [
+    "python3@latest",
+    "ffmpeg@latest"
+  ],
+  "shell": {
+    "init_hook": [
+      ". $VENV_DIR/bin/activate",
+      "pip install -e . -q",
+      "[ -f $VENV_DIR/bin/Info.plist ] || /usr/libexec/PlistBuddy -c 'Add :CFBundleIdentifier string \"rumps\"' $VENV_DIR/bin/Info.plist"
+    ],
+    "scripts": {
+      "start": [
+        "transkeet"
+      ]
+    }
+  }
+}

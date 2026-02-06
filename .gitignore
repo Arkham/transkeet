@@ -16,5 +16,8 @@ build/
 .vscode/
 *.swp
 
+# Devbox
+.devbox/
+
 # Claude Code
 .claude/
