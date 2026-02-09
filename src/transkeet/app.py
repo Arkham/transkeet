@@ -287,7 +287,30 @@ class TranskeetApp(rumps.App):
         super().run(**kwargs)
 
 
+def _check_accessibility():
+    """Prompt for Accessibility access if not already granted."""
+    try:
+        from ApplicationServices import (
+            AXIsProcessTrustedWithOptions,
+            kAXTrustedCheckOptionPrompt,
+        )
+
+        trusted = AXIsProcessTrustedWithOptions(
+            {kAXTrustedCheckOptionPrompt: True}
+        )
+        if not trusted:
+            print("Accessibility access not yet granted — macOS should show a prompt.")
+        return trusted
+    except ImportError:
+        print("Could not import ApplicationServices — skipping accessibility check.")
+        return True
+
+
 def main():
+    # Accessibility check is handled by the native Mach-O launcher in the .app bundle.
+    # When running from terminal, check here as a fallback.
+    if not _check_accessibility():
+        print("Tip: Launch via Transkeet.app for proper Accessibility permission handling.")
     config = ensure_config()
     print(f"Config: hotkey={config['hotkey']}, model={config['model']}")
     app = TranskeetApp(config)
