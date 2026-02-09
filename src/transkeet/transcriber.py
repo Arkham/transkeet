@@ -2,6 +2,7 @@ import os
 import tempfile
 import wave
 
+import mlx.core as mx
 import numpy as np
 
 
@@ -55,6 +56,7 @@ class Transcriber:
             result = self._model.transcribe(tmp_path)
             return result.text.strip()
         finally:
+            mx.clear_cache()
             if tmp_path and os.path.exists(tmp_path):
                 os.unlink(tmp_path)
 
