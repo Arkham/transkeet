@@ -32,8 +32,6 @@ pip install -e .
 python setup.py
 ```
 
-## Running
-
 ### Setup with Devbox (alternative)
 
 If you have [`devbox`](https://www.jetify.com/devbox), simply continue to the next step.
@@ -46,7 +44,7 @@ The recommended way to run Transkeet is via the `.app` bundle:
 open dist/Transkeet.app
 ```
 
-The `.app` bundle embeds Python inside a native macOS binary, which means macOS can properly grant and remember Accessibility, Input Monitoring, and Microphone permissions. Without it, you'll need to re-grant permissions to your terminal every time.
+The `.app` bundle embeds Python inside a native macOS binary, which means macOS can properly grant and remember Accessibility, Input Monitoring, and Microphone permissions.
 
 On first launch macOS will prompt you to grant Accessibility and Input Monitoring access — look for **Transkeet** in System Settings → Privacy & Security and toggle it on. The Parakeet model (~2.5 GB) will also be downloaded from Hugging Face and cached locally.
 
