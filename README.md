@@ -125,8 +125,17 @@ Config lives at `~/.config/transkeet/config.jsonc` (created on first run):
 
   // Parakeet model identifier (any parakeet-mlx compatible model).
   "model": "mlx-community/parakeet-tdt-0.6b-v3",
+
+  // Custom vocabulary for name correction.
+  // Each entry has a correct "name" and a list of common model mishearings.
+  "vocabulary": [
+    {"name": "Ju", "sounds_like": ["drew", "dru", "joo"]},
+    {"name": "Rajpreet", "sounds_like": ["raj prit", "raj preet"]}
+  ]
 }
 ```
+
+Vocabulary entries are applied as whole-word replacements after transcription, so a `sounds_like` of `"drew"` won't affect words like "Andrew".
 
 ## How it works
 

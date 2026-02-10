@@ -8,6 +8,9 @@ CONFIG_PATH = os.path.join(CONFIG_DIR, "config.jsonc")
 DEFAULT_CONFIG = {
     "hotkey": "cmd_r",
     "model": "mlx-community/parakeet-tdt-0.6b-v3",
+    "vocabulary": [
+        {"name": "transkeet", "sounds_like": ["transkit"]},
+    ],
 }
 
 DEFAULT_CONFIG_JSONC = """\
@@ -19,7 +22,14 @@ DEFAULT_CONFIG_JSONC = """\
   "hotkey": "cmd_r",
 
   // Parakeet model identifier (any parakeet-mlx compatible model).
-  "model": "mlx-community/parakeet-tdt-0.6b-v3"
+  "model": "mlx-community/parakeet-tdt-0.6b-v3",
+
+  // Custom vocabulary for name correction.
+  // Each entry has a correct "name" and a list of common model mishearings.
+  // "vocabulary": [
+  //   {"name": "Ju", "sounds_like": ["drew", "dru", "joo"]},
+  //   {"name": "Rajpreet", "sounds_like": ["raj prit", "raj preet"]}
+  // ]
 }
 """
 
@@ -80,3 +90,24 @@ def ensure_config() -> dict:
     merged = dict(DEFAULT_CONFIG)
     merged.update(user_cfg)
     return merged
+
+
+def build_vocabulary_replacements(config: dict) -> list[tuple[re.Pattern, str]]:
+    """Build regex replacements from the vocabulary config.
+
+    Returns a list of (compiled_pattern, replacement_name) tuples,
+    sorted longest-match-first so e.g. "raj prit" matches before "raj".
+    """
+    pairs: list[tuple[str, str]] = []
+    for entry in config.get("vocabulary", []):
+        name = entry.get("name", "")
+        for variant in entry.get("sounds_like", []):
+            pairs.append((variant, name))
+
+    # Sort longest first so longer phrases match before shorter substrings
+    pairs.sort(key=lambda p: len(p[0]), reverse=True)
+
+    return [
+        (re.compile(r"\b" + re.escape(variant) + r"\b", re.IGNORECASE), name)
+        for variant, name in pairs
+    ]

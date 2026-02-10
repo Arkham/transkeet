@@ -5,7 +5,7 @@ import numpy as np
 import rumps
 import sounddevice as sd
 
-from transkeet.config import ensure_config
+from transkeet.config import build_vocabulary_replacements, ensure_config
 from transkeet.transcriber import Transcriber
 
 # ── Hotkey helpers ──────────────────────────────────────────────────────────
@@ -139,6 +139,7 @@ class TranskeetApp(rumps.App):
         self._listener = None
         self._lock = threading.Lock()
         self._hotkey_recording = False  # True when recording was started by hotkey
+        self._vocab_replacements = build_vocabulary_replacements(config)
 
         # Menu items
         self._toggle_item = rumps.MenuItem("Start Recording", callback=self._toggle_from_menu)
@@ -208,6 +209,8 @@ class TranskeetApp(rumps.App):
             text = self._transcriber.transcribe(audio)
             elapsed = time.time() - t0
             if text:
+                for pattern, replacement in self._vocab_replacements:
+                    text = pattern.sub(replacement, text)
                 print(f"Transcribed {duration:.1f}s audio in {elapsed:.2f}s: {text}")
                 _paste_and_restore(text)
             else:
