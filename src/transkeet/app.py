@@ -162,15 +162,27 @@ class TranskeetApp(rumps.App):
             else:
                 self._start_recording()
 
+    def _open_input_stream(self):
+        """Open and return an sd.InputStream, reinitializing PortAudio on failure."""
+        sr = self._transcriber.sample_rate
+        kwargs = dict(samplerate=sr, channels=1, dtype="float32", callback=self._audio_callback)
+        try:
+            return sd.InputStream(**kwargs)
+        except sd.PortAudioError:
+            # Audio device handles go stale after macOS sleep/wake cycles.
+            # Reinitialize PortAudio so it picks up the current devices.
+            sd._terminate()
+            sd._initialize()
+            return sd.InputStream(**kwargs)
+
     def _start_recording(self):
         self._audio_frames = []
-        sr = self._transcriber.sample_rate
-        self._stream = sd.InputStream(
-            samplerate=sr,
-            channels=1,
-            dtype="float32",
-            callback=self._audio_callback,
-        )
+        try:
+            self._stream = self._open_input_stream()
+        except sd.PortAudioError as e:
+            print(f"Cannot open audio stream: {e}")
+            rumps.notification("Transkeet", "Microphone error", str(e))
+            return
         self._stream.start()
         self._recording = True
         self.title = ICON_RECORDING
